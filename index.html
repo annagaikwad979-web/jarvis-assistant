@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030914">
+<title>JARVIS | Personal AI</title>
+<style>
+:root {
+  --bg:#030914; --panel:#081629; --blue:#168cff;
+  --cyan:#36e8ff; --text:#e9f5ff; --muted:#8ca8c6;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; min-height:100vh; background:
+  radial-gradient(ellipse at 50% 20%,#092951 0%,var(--bg) 52%);
+  color:var(--text); font-family:Arial,sans-serif;
+}
+header {
+  display:flex; align-items:center; gap:13px;
+  padding:18px 20px; border-bottom:1px solid #153653;
+}
+.logo {
+  width:42px;height:42px;border:3px solid var(--cyan);
+  border-radius:50%; box-shadow:0 0 18px #168cff;
+  position:relative;
+}
+.logo:after {
+  content:""; position:absolute; inset:6px;
+  border:2px solid var(--blue);border-radius:50%;
+}
+.brand { font-size:21px;letter-spacing:6px;font-weight:bold; }
+.sub { color:var(--muted);font-size:11px;margin-top:5px; }
+main { width:min(100%,700px);margin:auto;padding:22px 17px 35px; }
+.eyebrow { color:var(--cyan);text-align:center;letter-spacing:3px;font-size:11px; }
+.core-wrap { display:flex;justify-content:center;margin:28px auto 24px; }
+.core {
+  width:180px;height:180px;border-radius:50%;
+  display:grid;place-items:center;position:relative;
+  border:1px solid #147dd5;
+  background:radial-gradient(circle,#123e6d 0%,#061a32 56%,#030914 72%);
+  box-shadow:0 0 30px #087bff55,inset 0 0 25px #078aff33;
+}
+.core:before,.core:after {
+  content:"";position:absolute;border-radius:50%;
+  border:2px solid var(--blue);animation:pulse 3s infinite;
+}
+.core:before { inset:12px;border-top-color:var(--cyan); }
+.core:after { inset:-9px;border-color:#0c467b;animation-delay:1s; }
+@keyframes pulse {
+  0%,100% { transform:scale(1);opacity:.9; }
+  50% { transform:scale(1.04);opacity:.45; }
+}
+.core-icon { font-size:57px;color:var(--cyan);text-shadow:0 0 28px #168cff; }
+h1 { text-align:center;font-size:30px;margin:0 0 8px; }
+h1 span { color:var(--cyan); }
+.subtitle { text-align:center;color:var(--muted);margin:0 0 23px; }
+.status { text-align:center;color:var(--cyan);font-size:12px;margin:12px; }
+.card {
+  background:linear-gradient(140deg,#0b1d33,#06101f);
+  border:1px solid #153c60;border-radius:16px;padding:16px;margin:14px 0;
+}
+.card h2 { margin:0 0 13px;font-size:15px; }
+.chat {
+  height:190px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+}
+.msg {
+  padding:11px 13px;border-radius:12px;max-width:90%;
+  font-size:14px;line-height:1.5;overflow-wrap:anywhere;
+}
+.bot { background:#0c2a48;border:1px solid #17496d;align-self:flex-start; }
+.user { background:#064c86;align-self:flex-end; }
+.row { display:flex;gap:8px;margin-top:12px; }
+input {
+  flex:1;min-width:0;background:#030d1b;border:1px solid #1a4568;
+  color:white;border-radius:10px;padding:13px;font-size:14px;
+}
+button {
+  background:#0b2b4c;color:white;border:1px solid #167bd1;
+  border-radius:10px;padding:12px 14px;font-size:13px;
+  cursor:pointer;
+}
+button:active { background:#07559a; }
+.primary { background:linear-gradient(120deg,#087bff,#0754bd); }
+.mic {
+  display:block;margin:18px auto 8px;width:76px;height:76px;
+  border-radius:50%;font-size:29px;border:2px solid var(--cyan);
+  background:radial-gradient(circle,#104c81,#06172b);
+  box-shadow:0 0 25px #087bff66;
+}
+.mic.listening { background:#8a1739;box-shadow:0 0 25px #ff315c; }
+.hint { color:var(--muted);text-align:center;font-size:12px;line-height:1.6; }
+.actions { display:grid;grid-template-columns:1fr 1fr;gap:9px; }
+.actions button { min-height:48px;text-align:left; }
+.note { display:flex;align-items:start;gap:9px;margin:10px 0;font-size:13px; }
+.note span { flex:1;white-space:pre-wrap;overflow-wrap:anywhere; }
+.note button { padding:6px 9px; }
+footer { text-align:center;color:#6888a8;font-size:11px;padding:16px; }
+</style>
+</>
+<body>
+<header>
+  <div class="logo"></div>
+  <div>
+    <div class="brand">JARVIS</div>
+    <div class="sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">YOUR PERSONAL ASSISTANT</div>
+  <div class="core-wrap">
+    <div class="core"><div class="core-icon">◈</div></div>
+  </div>
+  <h1>Hello, <span>there.</span></h1>
+  <p class="subtitle">How may I assist you today?</p>
+  <div class="status" id="status">● SYSTEM ONLINE</div>
+
+  <section class="card">
+    <h2>◉ &nbsp; Talk to JARVIS</h2>
+    <div class="chat" id="chat" aria-live="polite">
+      <div class="msg bot">Good day! I am JARVIS. Ask me for the time, a web search, a joke, or help with your notes.</div>
+    </div>
+    <div class="row">
+      <input id="question" placeholder="Type a command..." enterkeyhint="send">
+      <button class="primary" id="send">Send</button>
+    </div>
+    <button class="mic" id="mic" aria-label="Start voice recognition">🎙</button>
+    <p class="hint">Tap the microphone and speak.<br>
+      Voice recognition depends on browser support and internet access.</p>
+  </section>
+
+  <section class="card">
+    <h2>⚡ &nbsp; Quick actions</h2>
+    <div class="actions">
+      <button data-command="What time is it?">◷ &nbsp; Current time</button>
+      <button data-command="What is today's date?">▦ &nbsp; Today's date</button>
+      <button data-command="Tell me a joke">✧ &nbsp; Tell a joke</button>
+      <button data-command="Open YouTube">▷ &nbsp; Open YouTube</button>
+      <button data-command="Open Google">⌕ &nbsp; Open Google</button>
+      <button data-command="help">⌘ &nbsp; Help & commands</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>▤ &nbsp; My notes</h2>
+    <div class="row">
+      <input id="noteInput" placeholder="Write a note...">
+      <button class="primary" id="saveNote">Save</button>
+    </div>
+    <div id="notes"></div>
+    <p class="hint">Notes are stored in this browser on this device.</p>
+  </section>
+  <footer>JARVIS v1.0 · PERSONAL ASSISTANT · BUILT ON YOUR PHONE</footer>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const chat = $("chat");
+const statusBox = $("status");
+
+function addMessage(text, who="bot") {
+  const item = document.createElement("div");
+  item.className = "msg " + who;
+  item.textContent = text;
+  chat.appendChild(item);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-IN";
+  utterance.rate = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+function reply(text, shouldSpeak=true) {
+  addMessage(text);
+  statusBox.textContent = "● " + "SYSTEM ONLINE";
+  if (shouldSpeak) speak(text);
+}
+
+function openSite(url) {
+  window.open(url, "_blank", "noopener");
+}
+
+function handleCommand(raw) {
+  const text = raw.trim();
+  if (!text) return;
+  addMessage(text, "user");
+  $("question").value = "";
+  const q = text.toLowerCase();
+
+  if (/\b(hi|hello|hey)\b/.test(q)) {
+    reply("Hello! JARVIS is online and ready to assist you.");
+  } else if (q.includes("time")) {
+    reply("The current time is " +
+      new Date().toLocaleTimeString("en-IN", {
+        hour:"numeric",minute:"2-digit"
+      }));
+  } else if (q.includes("date") || q.includes("day today")) {
+    reply("Today is " +
+      new Date().toLocaleDateString("en-IN", {
+        weekday:"long",day:"numeric",month:"long",year:"numeric"
+      }));
+  } else if (q.includes("joke")) {
+    reply("Why do programmers prefer dark mode? Because light attracts bugs!");
+  } else if (q.includes("open youtube")) {
+    reply("Opening YouTube.");
+    openSite("https://www.youtube.com/");
+  } else if (q.includes("open google")) {
+    reply("Opening Google.");
+    openSite("https://www.google.com/");
+  } else if (q.includes("search")) {
+    const term = text.replace(/search/i, "").trim();
+    if (!term) {
+      reply("Tell me what you would like me to search for.");
+    } else {
+      reply("Searching the web for " + term);
+      openSite("https://www.google.com/search?q=" + encodeURIComponent(term));
+    }
+  } else if (q.startsWith("note ")) {
+    saveNoteText(text.slice(5));
+    reply("Your note has been saved.");
+  } else if (q.includes("help") || q.includes("what can you do")) {
+    reply("I can tell you the time and date, tell a joke, open Google or YouTube, search the web, and save notes. Try saying: search Java tutorials, or note buy milk.");
+  } else if (q.includes("who are you")) {
+    reply("I am JARVIS, your personal browser-based assistant.");
+  } else {
+    reply("I don't know that command yet. Try help, or say search followed by your topic.");
+  }
+}
+
+$("send").addEventListener("click", () => handleCommand($("question").value));
+$("question").addEventListener("keydown", e => {
+  if (e.key === "Enter") handleCommand($("question").value);
+});
+document.querySelectorAll("[data-command]").forEach(button => {
+  button.addEventListener("click", () => handleCommand(button.dataset.command));
+});
+
+function getNotes() {
+  try { return JSON.parse(localStorage.getItem("jarvisNotes") || "[]"); }
+  catch (e) { return []; }
+}
+
+function saveNoteText(value) {
+  const text = value.trim();
+  if (!text) return false;
+  const notes = getNotes();
+  notes.unshift({text, id:Date.now()});
+  try {
+    localStorage.setItem("jarvisNotes", JSON.stringify(notes.slice(0,100)));
+    renderNotes();
+    return true;
+  } catch (e) {
+    reply("I couldn't save this note. Check your browser storage.");
+    return false;
+  }
+}
+
+function renderNotes() {
+  const area = $("notes");
+  area.replaceChildren();
+  getNotes().forEach(note => {
+    const row = document.createElement("div");
+    row.className = "note";
+    const text = document.createElement("span");
+    text.textContent = note.text;
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      localStorage.setItem("jarvisNotes",
+        JSON.stringify(getNotes().filter(n => n.id !== note.id)));
+      renderNotes();
+    });
+    row.append(text, del);
+    area.appendChild(row);
+  });
+}
+
+$("saveNote").addEventListener("click", () => {
+  if (saveNoteText($("noteInput").value)) {
+    $("noteInput").value = "";
+    reply("Your note has been saved.");
+  }
+});
+$("noteInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") $("saveNote").click();
+});
+renderNotes();
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+const mic = $("mic");
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  mic.addEventListener("click", () => {
+    try {
+      statusBox.textContent = "● LISTENING...";
+      mic.classList.add("listening");
+      recognition.start();
+    } catch (e) {
+      statusBox.textContent = "● PLEASE TRY AGAIN";
+      mic.classList.remove("listening");
+    }
+  });
+
+  recognition.onresult = event => {
+    const transcript = event.results[0][0].transcript;
+    mic.classList.remove("listening");
+    statusBox.textContent = "● PROCESSING...";
+    handleCommand(transcript);
+  };
+  recognition.onerror = () => {
+    statusBox.textContent = "● VOICE ERROR — TRY TYPING";
+    mic.classList.remove("listening");
+  };
+  recognition.onend = () => mic.classList.remove("listening");
+} else {
+  mic.addEventListener("click", () => {
+    reply("Voice recognition is not supported in this browser. Please type your command instead.", false);
+  });
+}
+</script>
+</body>
+</html>
